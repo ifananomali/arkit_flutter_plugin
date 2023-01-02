@@ -53,6 +53,13 @@ extension FlutterArkitView: ARSCNViewDelegate {
         if (node.name == nil) {
             node.name = NSUUID().uuidString
         }
+        
+        if #available(iOS 11.3, *) {
+            self.sceneView.session.setWorldOrigin(relativeTransform: anchor.transform)
+        } else {
+            // Fallback on earlier versions
+        }
+        
         let params = prepareParamsForAnchorEvent(node, anchor)
         self.channel.invokeMethod("didAddNodeForAnchor", arguments: params)
     }
@@ -73,7 +80,8 @@ extension FlutterArkitView: ARSCNViewDelegate {
     }
     
     fileprivate func prepareParamsForAnchorEvent(_ node: SCNNode, _ anchor: ARAnchor) -> Dictionary<String, Any> {
-        var serializedAnchor = serializeAnchor(anchor)
+        node.transform = SCNMatrix4(anchor.transform)
+        var serializedAnchor = serializeAnchor(anchor, node.eulerAngles.x, node.eulerAngles.y, node.eulerAngles.z)
         serializedAnchor["nodeName"] = node.name
         return serializedAnchor
     }

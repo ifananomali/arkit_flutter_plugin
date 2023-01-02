@@ -1,10 +1,13 @@
 import Foundation
 import ARKit
 
-func serializeAnchor(_ anchor: ARAnchor) -> Dictionary<String, Any> {
+func serializeAnchor(_ anchor: ARAnchor, _ pitch: Float?, _ roll: Float?, _ yaw: Float?) -> Dictionary<String, Any> {
     var params = [
         "identifier": anchor.identifier.uuidString,
-        "transform": serializeMatrix(anchor.transform)
+        "transform": serializeMatrix(anchor.transform),
+        "pitch": pitch as Any,
+        "roll": roll as Any,
+        "yaw": yaw as Any,
         ] as [String : Any]
     
     if let planeAnchor = anchor as? ARPlaneAnchor {

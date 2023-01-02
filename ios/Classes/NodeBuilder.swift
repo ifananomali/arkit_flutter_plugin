@@ -36,6 +36,22 @@ func updateNode(_ node: SCNNode, fromDict dict: Dictionary<String, Any>, forDevi
     if let isHidden = dict["isHidden"] as? Bool {
         node.isHidden = isHidden
     }
+    
+    if let position = dict["position"] as? Array<Double> {
+        node.position = deserizlieVector3(position)
+    }
+    
+    if let scale = dict["scale"] as? Array<Double> {
+        node.scale = deserizlieVector3(scale)
+    }
+    
+    if let eulerAngle = dict["eulerAngles"] as? Array<Double> {
+        node.eulerAngles = deserizlieVector3(eulerAngle)
+    }
+    
+    if let rotation = dict["rotation"] as? Array<Double> {
+        node.rotation = deserizlieVector4(rotation)
+    }
 }
 
 fileprivate func createReferenceNode(_ dict: Dictionary<String, Any>) -> SCNReferenceNode {

@@ -12,6 +12,13 @@ import 'package:vector_math/vector_math_64.dart';
 /// The coordinate systems of all the sub-nodes are relative to the one of their parent node.
 class ARKitNode {
   ARKitNode({
+    this.videoUrl,
+    this.isTransparent,
+    this.transparentBgColor,
+    this.thresholdSensitivity,
+    this.smoothing,
+    this.objWidth,
+    this.objHeight,
     this.geometry,
     this.physicsBody,
     this.light,
@@ -30,6 +37,20 @@ class ARKitNode {
 
   static const bool defaultIsHiddenValue = false;
   static const int defaultRenderingOrderValue = 0;
+
+  final String? videoUrl;
+
+  final String? transparentBgColor;
+
+  final bool? isTransparent;
+
+  final double? objWidth;
+
+  final double? thresholdSensitivity;
+
+  final double? smoothing;
+
+  final double? objHeight;
 
   /// Returns the geometry attached to the receiver.
   final ARKitGeometry? geometry;
@@ -108,6 +129,13 @@ class ARKitNode {
   static const _matrixValueNotifierConverter = MatrixValueNotifierConverter();
 
   Map<String, dynamic> toMap() => <String, dynamic>{
+        'videoUrl': videoUrl,
+        'isTransparent': isTransparent,
+        'transparentBgColor': transparentBgColor,
+        'thresholdSensitivity': thresholdSensitivity,
+        'smoothing': smoothing,
+        'objWidth': objWidth,
+        'objHeight': objHeight,
         'dartType': runtimeType.toString(),
         'geometry': geometry?.toJson(),
         'transform': _matrixValueNotifierConverter.toJson(transformNotifier),

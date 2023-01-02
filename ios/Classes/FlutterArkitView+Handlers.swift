@@ -1,15 +1,76 @@
 import ARKit
 
+var listAvPlayer = [AVPlayer]()
+
 extension FlutterArkitView {
-    func onAddNode(_ arguments: Dictionary<String, Any>) {
-        let geometryArguments = arguments["geometry"] as? Dictionary<String, Any>
-        let geometry = createGeometry(geometryArguments, withDevice: sceneView.device)
-        let node = createNode(geometry, fromDict: arguments, forDevice: sceneView.device)
-        if let parentNodeName = arguments["parentNodeName"] as? String {
-            let parentNode = sceneView.scene.rootNode.childNode(withName: parentNodeName, recursively: true)
-            parentNode?.addChildNode(node)
+    func addARVideo(_ parentNodeName: String?, _ videoUrl: String?, _ arguments: Dictionary<String, Any>) {
+        var url: URL?
+        
+        if let vidUrl = videoUrl {
+            url = URL(fileURLWithPath: vidUrl)
         } else {
-            sceneView.scene.rootNode.addChildNode(node)
+            url = URL(string: "")
+        }
+        
+        let avPlayer = AVPlayer(url: url!)
+        listAvPlayer.append(avPlayer)
+        
+        listAvPlayer.forEach { avPly in
+            NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: avPly.currentItem, queue: nil) { (_) in
+                avPly.seek(to: CMTime.zero)
+                avPly.play()
+            }
+        }
+        
+        listAvPlayer.last?.play()
+        
+        let objWidth = arguments["objWidth"] as? Double
+        let objHeight = arguments["objHeight"] as? Double
+        
+        let tvPlane = SCNPlane(width: CGFloat(objWidth!), height: CGFloat(objHeight!))
+        tvPlane.firstMaterial?.diffuse.contents = listAvPlayer.last
+        tvPlane.firstMaterial?.isDoubleSided = true
+        
+        let vidNodeFix = createNode(tvPlane, fromDict: arguments, forDevice: sceneView.device)
+        
+        let isTransparent = arguments["isTransparent"] as? Bool
+        let rgb = arguments["transparentBgColor"] as? String
+        let rgbArray = rgb?.components(separatedBy: ",")
+        
+        let thresholdSensitivity = arguments["thresholdSensitivity"] as? Double
+        let smoothing = arguments["smoothing"] as? Double
+        
+        if (isTransparent!) {
+            // Alpha transparancy stuff
+            let chromaKeyMaterial = ChromaKeyMaterial(backgroundColor: UIColor(red: CGFloat((rgbArray![0] as NSString).floatValue), green: CGFloat((rgbArray![1] as NSString).floatValue), blue: CGFloat((rgbArray![2] as NSString).floatValue), alpha: 1), thresholdSensitivity: Float(thresholdSensitivity!), smoothing: Float(smoothing!))
+            chromaKeyMaterial.diffuse.contents = listAvPlayer.last
+            vidNodeFix.geometry!.materials = [chromaKeyMaterial]
+        }
+        
+        if let pNN = parentNodeName {
+            let parentNode = sceneView.scene.rootNode.childNode(withName: pNN, recursively: true)
+            parentNode?.addChildNode(vidNodeFix)
+        } else {
+            sceneView.scene.rootNode.addChildNode(vidNodeFix)
+        }
+    }
+    
+    func onAddNode(_ arguments: Dictionary<String, Any>) {
+//        let geometryArguments = arguments["geometry"] as? Dictionary<String, Any>
+//        let geometry = createGeometry(geometryArguments, withDevice: sceneView.device)
+//        let node = createNode(geometry, fromDict: arguments, forDevice: sceneView.device)
+//        if let parentNodeName = arguments["parentNodeName"] as? String {
+//            let parentNode = sceneView.scene.rootNode.childNode(withName: parentNodeName, recursively: true)
+//            parentNode?.addChildNode(node)
+//        } else {
+//            sceneView.scene.rootNode.addChildNode(node)
+//        }
+        let videoUrl = arguments["videoUrl"] as? String
+        if let parentNodeName = arguments["parentNodeName"] as? String {
+            addARVideo(parentNodeName, videoUrl, arguments)
+        } else {
+            //sceneView.scene.rootNode.addChildNode(node)
+            addARVideo(nil, videoUrl, arguments)
         }
     }
   

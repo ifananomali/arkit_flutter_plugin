@@ -12,6 +12,9 @@ abstract class ARKitAnchor {
     this.nodeName,
     this.identifier,
     this.transform,
+    this.pitch,
+    this.roll,
+    this.yaw,
   );
 
   factory ARKitAnchor.fromJson(Map<String, dynamic> arguments) {
@@ -40,6 +43,12 @@ abstract class ARKitAnchor {
   @MatrixConverter()
   final Matrix4 transform;
 
+  final double pitch;
+
+  final double roll;
+
+  final double yaw;
+
   Map<String, dynamic> toJson();
 }
 
@@ -51,7 +60,10 @@ class ARKitUnkownAnchor extends ARKitAnchor {
     String? nodeName,
     String identifier,
     Matrix4 transform,
-  ) : super(nodeName, identifier, transform);
+    double pitch,
+    double roll,
+    double yaw,
+  ) : super(nodeName, identifier, transform, pitch, roll, yaw);
 
   final String anchorType;
 
@@ -72,10 +84,17 @@ class ARKitPlaneAnchor extends ARKitAnchor {
     String? nodeName,
     String identifier,
     Matrix4 transform,
+    double pitch,
+    double roll,
+    double yaw,
   ) : super(
           nodeName,
           identifier,
           transform,
+
+          pitch,
+          roll,
+          yaw,
         );
 
   /// The center of the plane in the anchor’s coordinate space.
@@ -103,10 +122,16 @@ class ARKitImageAnchor extends ARKitAnchor {
     String? nodeName,
     String identifier,
     Matrix4 transform,
+    double pitch,
+    double roll,
+    double yaw,
   ) : super(
           nodeName,
           identifier,
           transform,
+          pitch,
+          roll,
+          yaw,
         );
 
   /// Name of the detected image (might be null).
@@ -137,12 +162,18 @@ class ARKitFaceAnchor extends ARKitAnchor {
     String? nodeName,
     String identifier,
     Matrix4 transform,
+    double pitch,
+    double roll,
+    double yaw,
     this.leftEyeTransform,
     this.rightEyeTransform,
   ) : super(
           nodeName,
           identifier,
           transform,
+          pitch,
+          roll,
+          yaw,
         );
 
   /// The face geometry updated based on the computed blend shapes.
@@ -182,10 +213,16 @@ class ARKitBodyAnchor extends ARKitAnchor {
     String? nodeName,
     String identifier,
     Matrix4 transform,
+    double pitch,
+    double roll,
+    double yaw,
   ) : super(
           nodeName,
           identifier,
           transform,
+          pitch,
+          roll,
+          yaw,
         );
 
   /// The tracked skeleton in 3D.
